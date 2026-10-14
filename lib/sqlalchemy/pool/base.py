@@ -934,13 +934,19 @@ class _ConnectionRecord(ConnectionPoolEntry):
                 with util.safe_reraise():
                     try:
                         pool._close_connection(connection, terminate=True)
-                    except BaseException:
+                    except Exception:
+                        # Preserve the original connect-event exception for an
+                        # ordinary cleanup failure. Cancellation (BaseException)
+                        # must instead propagate to the awaiting task.
                         pool.logger.exception(
                             "Exception closing connection %r stranded by a "
                             "failed connect event",
                             connection,
                         )
-                    self.dbapi_connection = None
+                    finally:
+                        # Even cancelled async termination must not leave a
+                        # reference to a connection that cannot be reused.
+                        self.dbapi_connection = None
 
 
 def _finalize_fairy(
