@@ -1,0 +1,31 @@
+name: Fork pool cancellation source regression
+on:
+  push:
+    branches: [fix/pool-connect-cleanup-cancellation-20261015]
+    paths:
+      - lib/sqlalchemy/pool/base.py
+      - test/engine/test_pool_connect_cancellation.py
+      - .github/workflows/fork-pool-cancellation-regression.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cancellation-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: DISABLE_SQLALCHEMY_CEXT=1 python -m pip install -e ".[asyncio]" pytest
+      - name: Run deterministic real SQLAlchemy pool cancellation test
+        env:
+          DISABLE_SQLALCHEMY_CEXT: "1"
+        run: python -m pytest -q test/engine/test_pool_connect_cancellation.py
