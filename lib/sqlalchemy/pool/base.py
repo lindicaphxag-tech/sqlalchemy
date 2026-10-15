@@ -936,8 +936,8 @@ class _ConnectionRecord(ConnectionPoolEntry):
                         pool._close_connection(connection, terminate=True)
                     except Exception:
                         # Preserve the original connect-event exception for an
-                        # ordinary cleanup failure. Cancellation (BaseException)
-                        # must instead propagate to the awaiting task.
+                        # ordinary cleanup failure. A BaseException such as
+                        # cancellation must propagate to the awaiting task.
                         pool.logger.exception(
                             "Exception closing connection %r stranded by a "
                             "failed connect event",
