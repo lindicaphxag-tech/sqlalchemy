@@ -70,9 +70,7 @@ class ForeignKeyDialectCopyTest(fixtures.TestBase):
         )
         assert copied_fk.dialect_kwargs["postgresql_not_valid"] is not_valid
         ddl = str(
-            AddConstraint(copied_fk).compile(
-                dialect=postgresql.dialect()
-            )
+            AddConstraint(copied_fk).compile(dialect=postgresql.dialect())
         )
         assert ddl.endswith(" NOT VALID") is not_valid
 
@@ -84,9 +82,7 @@ class ForeignKeyDialectCopyTest(fixtures.TestBase):
             original_fk.dialect_kwargs
         )
         twice_ddl = str(
-            AddConstraint(twice_fk).compile(
-                dialect=postgresql.dialect()
-            )
+            AddConstraint(twice_fk).compile(dialect=postgresql.dialect())
         )
         assert twice_ddl == ddl
 
@@ -138,17 +134,16 @@ class ForeignKeyDialectCopyTest(fixtures.TestBase):
         constraints = {c.name: c for c in copied.constraints}
         fk = constraints["fk_test"]
         assert fk.dialect_kwargs["postgresql_not_valid"] is True
-        assert constraints["uq_test"].dialect_kwargs[
-            "postgresql_nulls_not_distinct"
-        ] is True
+        assert (
+            constraints["uq_test"].dialect_kwargs[
+                "postgresql_nulls_not_distinct"
+            ]
+            is True
+        )
         assert fk.deferrable is True
         assert fk.initially == "DEFERRED"
         assert fk.ondelete == "CASCADE"
-        ddl = str(
-            AddConstraint(fk).compile(
-                dialect=postgresql.dialect()
-            )
-        )
+        ddl = str(AddConstraint(fk).compile(dialect=postgresql.dialect()))
         assert "NOT VALID" in ddl
 
     def test_single_options(self):
