@@ -1,0 +1,20 @@
+name: Fork SQLAlchemy Black patch diagnostics
+on:
+  push:
+    branches: [fix/fk-constraint-dialect-options-copy-20261015]
+    paths:
+      - .github/workflows/fork-black-fk-diagnostics.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  patch-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install black==26.3.1
+      - name: Output exact Black expected diff
+        run: python -m black --diff --line-length 79 test/sql/test_fk_constraint_dialect_copy.py
