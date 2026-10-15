@@ -5646,6 +5646,9 @@ class ForeignKeyConstraint(ColumnCollectionConstraint):
             link_to_name=self.link_to_name,
             match=self.match,
             comment=self.comment,
+            # Preserve explicitly configured dialect semantics such as
+            # postgresql_not_valid when Table.to_metadata() copies the FK.
+            **self.dialect_kwargs,
         )
         for self_fk, other_fk in zip(self.elements, fkc.elements):
             self_fk._schema_item_copy(other_fk)
