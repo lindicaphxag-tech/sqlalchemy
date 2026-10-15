@@ -17,6 +17,7 @@ from sqlalchemy.util import greenlet_spawn
 
 class PoolConnectCancellationTest(fixtures.TestBase):
     def test_cancel_during_async_cleanup_propagates(self):
+        pytest.importorskip("greenlet", reason="asyncio pool tests need the optional greenlet extra")
         async def scenario():
             closing = asyncio.Event()
             record_holder = []
@@ -69,6 +70,7 @@ class PoolConnectCancellationTest(fixtures.TestBase):
         assert records[0].dbapi_connection is None
 
     def test_successful_async_cleanup_preserves_original_event_error(self):
+        pytest.importorskip("greenlet", reason="asyncio pool tests need the optional greenlet extra")
         async def scenario():
             records = []
             was_closed = []
